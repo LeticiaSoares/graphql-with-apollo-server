@@ -1,0 +1,32 @@
+{
+  "name": "graphql-with-apollo-server",
+  "version": "1.0.0",
+  "description": "Graphql with apollo server",
+  "main": "src/server.js",
+  "scripts": {
+    "babel-node": "babel-node",
+    "start": "nodemon --exec npm run babel-node -- src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeticiaSoares/graphql-with-apollo-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeticiaSoares/graphql-with-apollo-server/issues"
+  },
+  "homepage": "https://github.com/LeticiaSoares/graphql-with-apollo-server#readme",
+  "dependencies": {
+    "apollo-server": "^2.12.0",
+    "graphql": "^15.0.0",
+    "@babel/cli": "^7.0.0",
+    "@babel/core": "^7.0.0",
+    "@babel/node": "^7.8.7",
+    "@babel/preset-env": "^7.9.5",
+    "babel-preset-env": "^1.7.0",
+    "nodemon": "^2.0.3",
+    "mysql": "^2.18.1"
+  }
+}
