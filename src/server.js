@@ -1,42 +1,71 @@
 const { ApolloServer, gql } = require('apollo-server');
-import database, {queryDB} from './database'
+import { save, getList } from './services'
 
 const typeDefs = gql`
+    type Todo {
+        id : Int
+        title: String
+        descricao: String
+        status: String
+    }
     type User {
-        id: String
-        name: String
-        job_title: String
-        email: String
+        id : Int,
+        email : String,
     }
     type Query {
-        getAllUsers: [User],
-        getUserInfo(name: String) : [User]
+        getList: [Todo],
+        getTodoInfo(title: String) : [Todo]
     }
     type Mutation {
-        updateUserInfo(id: Int, name: String, email: String, job_title: String): Boolean
-        createUser(name: String, email: String, job_title: String): Boolean
-        deleteUser(id: Int): Boolean
+        saveTodo(title: String, descricao: String, status: String, email: String ): String
     }
 `;
 
 const resolvers =  {
     Query:{
-        getAllUsers: (_,args) => queryDB("select * from users.users u").then(data => data),
-        getUserInfo: async (_, { name }) => {
-            const variable = `%${name}%`
-            return  queryDB( "select * from users.users u  where  u.name like ?",variable).then(data => data)
+        getList:(_, { email}) => {
+             return getList(email).then( async response => {
+                const {status} = response;
+                const data = await response.json();
+                if (status == 201) {
+                    return data
+                }
+                return 'Erro no Cadastro'
+            })
         },
     },
     Mutation : {
-        updateUserInfo: (_,args) => queryDB("update users.users SET ? where id = ?", [args, args.id]).then(data => data),
-        createUser: (_,args) => queryDB( "insert into users.users SET ?", args).then(data => data),
-        deleteUser: (_,args) => queryDB( "delete from users.users where id = ?", [args.id]).then(data => data),
+        saveTodo : (_,args) => {
+            console.log('args',args)
+            return save(args).then(response => {
+                console.log('response',response)
+                const {status} = response;
+                if (status == 201) {
+                    return "Salvo com Sucesso"
+                }
+                return 'Erro no Cadastro'
+            })
+        }
     }
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
 
-database.connect();
+// const resolvers =  {
+//     Query:{
+//         getAllUsers: (_,args) => queryDB("select * from users.users u").then(data => data),
+//         getUserInfo: async (_, { name }) => {
+//             const variable = `%${name}%`
+//             return  queryDB( "select * from users.users u  where  u.name like ?",variable).then(data => data)
+//         },
+//     },
+//     Mutation : {
+//         updateUserInfo: (_,args) => queryDB("update users.users SET ? where id = ?", [args, args.id]).then(data => data),
+//         createUser: (_,args) => queryDB( "insert into users.users SET ?", args).then(data => data),
+//         deleteUser: (_,args) => queryDB( "delete from users.users where id = ?", [args.id]).then(data => data),
+//     }
+// };
+
+const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
     console.log(`🚀  Server ready at ${url}`);
