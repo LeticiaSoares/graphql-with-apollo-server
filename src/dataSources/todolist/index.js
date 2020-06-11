@@ -7,6 +7,7 @@ class TodoListApi extends RESTDataSource {
     }
     async didReceiveResponse(response) {
         const body = await response.json()
+
         const { status = '500' } = response
         if(status == 404 || status == 500){
             return { error : response.statusText}
@@ -22,8 +23,17 @@ class TodoListApi extends RESTDataSource {
             url
         );
         const list = response.body
-        console.log('list',list)
+        console.log('getTodoList response',list)
         return list
+    }
+    async createTodo(todo) {
+        const url =`list/`
+        const response = await this.post(
+            url,
+            {...todo}
+        );
+        console.log('createTodo response',response.body)
+        return response.body
     }
 }
 

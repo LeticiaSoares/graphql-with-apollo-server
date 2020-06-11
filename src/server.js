@@ -1,42 +1,11 @@
-const { ApolloServer, gql } = require('apollo-server');
+import {ApolloServer} from 'apollo-server';
+
 import LoginApi from './dataSources/login'
 import TodoListApi from './dataSources/todolist'
 
-const typeDefs = gql`
-    type User {
-        id : Int,
-        name: String,
-        email : String,
-        password: String,
-        session_id: String,
-    }
-    type Todo {
-        id : Int,
-        title : String,
-        descricao: String,
-        status: String,
-        color: String,
-    }
-    type Mutation {
-        loginUser(email: String,password: String): User
-    }
-    type Query{
-        getList(user_id : Int): [Todo]
-    }
-`;
+import typeDefs from './typeDefs'
+import resolvers from './resolvers'
 
-const resolvers =  {
-    Query:{
-        getList:async (_,args,{ dataSources}) =>{
-            return await dataSources.todoApi.getTodoList(args)
-        }
-    },
-    Mutation : {
-        loginUser : async (_,args,{ dataSources}) =>{
-            return await dataSources.loginApi.login(args)
-        }
-    },
-};
 
 const context = ({ req, res }) => ({
     request: req,
@@ -60,5 +29,5 @@ const server = new ApolloServer(
 );
 
 server.listen().then(({ url }) => {
-    console.log(`Server ready at ${url}`);
+    console.log(`Apollo server started ${url}`);
 });
